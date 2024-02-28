@@ -9,6 +9,7 @@ const guestNav = [
 const userNav = [
   { to : '/', text: 'Home' },
   { to : '/bookinghistry', text: 'bookinghistry' },
+  { to : '/newtable', text: 'CreaTable' }
 ]
 
 export default function Header() {

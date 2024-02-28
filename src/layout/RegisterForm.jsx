@@ -60,9 +60,10 @@ export default function RegisterForm() {
             onChange={ hdlChange }
           />
         </label>
-        <label className="form-control w-full max-w-xs  mx-auto ">
+        <label className="form-control w-full max-w-xs  mx-auto">
           <div className="label">
-            <span className="label-text">E-mail</span>
+            <span className="label-text ">E-mail</span>
+           
           </div>
           <input
             type="email"

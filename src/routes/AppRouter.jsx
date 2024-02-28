@@ -5,6 +5,7 @@ import useAuth from '../hooks/useAuth'
 import Header from '../layout/Header'
 import UserHome from '../layout/UserHome'
 import BookingHistry from '../layout/ฺBookingHistry'
+import CreaTable from '../layout/CreaTable'
 
 const guestRouter = createBrowserRouter([
   {
@@ -29,7 +30,9 @@ const userRouter = createBrowserRouter([
     </>,
     children : [
       { index: true, element: <UserHome /> },
-      { path: '/bookinghistry', element: <BookingHistry/>}
+      { path: '/bookinghistry', element: <BookingHistry/>},
+      { path: '/newtable',element: <CreaTable/>}
+
     ]
   }
 ])
