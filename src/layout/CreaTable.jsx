@@ -5,10 +5,12 @@ import axios from 'axios';
 
 export default function CreaTable() {
     const [input,setInput] = useState({
+        images : '',
         type : '',
         tableNumber : '',
         capacity : '',
         status : '',
+
         
     })
     const hdlChange = e => {
@@ -18,11 +20,16 @@ export default function CreaTable() {
       const hdlSubmit = async e => {
         try{
           e.preventDefault()
-          const output = { ...input,tableNumber: parseInt(input.tableNumber),capacity: parseInt(input.capacity)}
+          const formData = new FormData();
+          formData.append('images', input.images);
+          formData.append('type', input.type);
+          formData.append('tableNumber', parseInt(input.tableNumber));
+          formData.append('capacity', parseInt(input.capacity));
+          formData.append('status', input.status);
+
           const token = localStorage.getItem('token')
-          const rs = await axios.post('http://localhost:7000/admin/create', output, {
-            
-            headers : { Authorization : `Bearer ${token}`}
+          const rs = await axios.post('http://localhost:7000/admin/uploads', formData, {
+            headers : { Authorization : `Bearer ${token}`, 'Content-Type': 'multipart/form-data'}
           })
           console.log(rs)
           alert('Create new OK')
@@ -30,11 +37,31 @@ export default function CreaTable() {
           alert(err.message)
         }
       }
-    
+      const onFileChange = (e) => {
+        if (e.target.files && e.target.files[0]) {
+          const file = e.target.files[0];
+          setInput((prev) => ({ ...prev, images: file }));
+        } else {
+          console.error("No files selected");
+        }
+      };
   return (
     <form className="flex flex-col min-w-[600px] border rounded w-5/6 mx-auto p-4 gap-6"
-    onSubmit={hdlSubmit}
->
+    onSubmit={hdlSubmit}>
+
+<label className="form-control w-full">
+  <div className="label">
+    <span className="label-text">Image</span>
+  </div>
+  <input
+    type="file"
+    className="input input-bordered w-full"
+    name="images"
+    onChange={onFileChange}
+  />
+</label>
+
+
   <label className="form-control w-full ">
     <div className="label">
       <span className="label-text">TypeTable</span>
@@ -88,7 +115,7 @@ export default function CreaTable() {
     />
   </label>
   
-  <button className="btn btn-primary">Add new</button>
+  <button className="btn btn-success">Crea Table</button>
 </form>
   )
 }

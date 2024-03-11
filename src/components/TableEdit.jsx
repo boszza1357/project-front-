@@ -9,6 +9,7 @@ export default function TableEdit(props) {
     tableNumber : '',
     capacity : '',
     status : '',
+    images : null,
 })
  
   useEffect( ()=>{
@@ -24,29 +25,61 @@ export default function TableEdit(props) {
 const hdlChange = e => {
   setInput( prv => ( {...prv, [e.target.name] : e.target.value} ))
 }
+const hdlFileChange = e =>{
+  setInput (prv => ({...prv, images : e.target.files[0]}));
+}
 const hdlSubmit = async e => {
-  try{
-    e.preventDefault()
-    const output = { ...input,tableNumber: parseInt(input.tableNumber),capacity: parseInt(input.capacity)}
-    const token = localStorage.getItem('token')
-    const rs = await axios.put(`http://localhost:7000/admin/update/${el.table_id}`, output, {
-      headers : { Authorization : `Bearer ${token}`}
-    })
-    setTrigger(prv=>!prv);
-    console.log(rs)
-    alert('Update OK')
-    
-  }catch(err) {
-    alert(err.message)
+  try {
+    e.preventDefault();
+
+    // ตรวจสอบว่า input.images ไม่ใช่ null ก่อน append
+    if (input.images !== null) {
+      const output = {
+        ...input,
+        tableNumber: parseInt(input.tableNumber),
+        capacity: parseInt(input.capacity),
+      };
+
+      const formData = new FormData();
+      formData.append("type", output.type);
+      formData.append("tableNumber", output.tableNumber);
+      formData.append("capacity", output.capacity);
+      formData.append("status", output.status);
+
+      // append รูปภาพ
+      formData.append("images", input.images);
+      console.log("Sending data to back-end:", formData);
+      const token = localStorage.getItem('token');
+      const rs = await axios.put(`http://localhost:7000/admin/update/${el.table_id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setTrigger(prev => !prev);
+      console.log(rs);
+      alert('Update OK');
+    } else {
+      alert('Please select an image before updating.');
+    }
+  } catch (err) {
+    alert(err.message);
   }
 }
-
   return (
     <dialog id="my_modal_5" className="modal modal-bottom sm:modal-middle">
     <div className="modal-box">
     <form className="flex flex-col  border rounded w-5/6 mx-auto p-4 gap-6"
-    onSubmit={hdlSubmit}
->
+    onSubmit={hdlSubmit}>
+
+      <label className="form-control w-full ">
+    <div className="label">
+      <span className="label-text">file image</span>
+    </div>
+    <input type="file" id='imageInput' onChange={hdlFileChange} />
+  </label>
+
   <label className="form-control w-full ">
     <div className="label">
       <span className="label-text">TypeTable</span>
