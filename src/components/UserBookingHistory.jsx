@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { format } from 'date-fns';
 
-function BookingHistry() {
+function UserBookingHistory() {
   const [userBookings, setUserBookings] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -97,4 +97,4 @@ function BookingHistry() {
   );
 }
 
-export default BookingHistry;
+export default UserBookingHistory;

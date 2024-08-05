@@ -10,17 +10,41 @@ export default function TableEdit(props) {
     capacity : '',
     status : '',
     images : null,
+    price : '',
+    nots : '',
 })
  
   useEffect( ()=>{
     setInput({
+      images : el?.images,
       type: el?.type,
       tableNumber: el?.tableNumber,
       capacity: el?.capacity,
-      status: el?.status 
+      status: el?.status,
+      price : el?.price,
+      nots : el?.nots 
     })
 
   },[el?.table_id])
+  const [tableStatusOptions, setTableStatusOptions] = useState([]);
+    const token = localStorage.getItem('token');
+    useEffect(() => {
+        async function fetchTableStatus() {
+            try {
+                const response = await axios.get('http://localhost:7000/admin/all-status',{
+                  headers: {
+                    Authorization: `Bearer ${token}`
+                }
+                });
+                setTableStatusOptions(response.data.status);
+            } catch (error) {
+                console.error('Error fetching table status:', error);
+            }
+        }
+
+        fetchTableStatus();
+    }, []);
+  
 
 const hdlChange = e => {
   setInput( prv => ( {...prv, [e.target.name] : e.target.value} ))
@@ -32,12 +56,12 @@ const hdlSubmit = async e => {
   try {
     e.preventDefault();
 
-    // ตรวจสอบว่า input.images ไม่ใช่ null ก่อน append
     if (input.images !== null) {
       const output = {
         ...input,
-        tableNumber: parseInt(input.tableNumber),
         capacity: parseInt(input.capacity),
+        price : parseFloat(input.price)
+        
       };
 
       const formData = new FormData();
@@ -45,6 +69,8 @@ const hdlSubmit = async e => {
       formData.append("tableNumber", output.tableNumber);
       formData.append("capacity", output.capacity);
       formData.append("status", output.status);
+      formData.append('price', parseFloat(output.price));
+      formData.append('nots', output.nots);
 
       // append รูปภาพ
       formData.append("images", input.images);
@@ -119,23 +145,45 @@ const hdlSubmit = async e => {
       onChange={hdlChange}
     />
   </label>
-  <label className="form-control w-full">
-  <div className="label">
-    <span className="label-text">Status</span>
-  </div>
-  <select
-    className="select select-primary w-full max-w-xs"
-    name="status"
-    value={input.status}
-    onChange={hdlChange}
-  >
-  
-   
-    <option value="โต๊ะว่าง">โต๊ะว่าง</option>
-    <option value="จองแล้ว">จองแล้ว</option>
-  </select>
-</label>
-  
+  <label className="form-control w-full ">
+                <div className="label">
+                    <span className="label-text">Table Status</span>
+                </div>
+                <select
+                    className="select select-bordered w-full"
+                    name="status"
+                    value={input.status}
+                    onChange={hdlChange}
+                >
+                    {tableStatusOptions.map(status => (
+                        <option key={status} value={status}>{status}</option>
+                    ))}
+                </select>
+            </label>
+            <label className="form-control w-full ">
+    <div className="label">
+      <span className="label-text">Price</span>
+    </div>
+    <input
+      type="text"
+      className="input input-bordered w-full "
+      name="price"
+      value={input.price}
+      onChange={hdlChange}
+    />
+  </label>
+  <label className="form-control w-full ">
+    <div className="label">
+      <span className="label-text">Notes</span>
+    </div>
+    <input
+      type="text"
+      className="input input-bordered w-full "
+      name="nots"
+      value={input.nots}
+      onChange={hdlChange}
+    />
+  </label>
   <button type='submit' className="btn btn-primary" onClick={closeModal}>Update Table</button>
   <button type='button' className="btn btn-error" onClick={closeModal}>Cancel</button>
 

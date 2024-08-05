@@ -1,13 +1,11 @@
 import axios from 'axios';
 import React,{useEffect,useState} from 'react'
 
-
-
 export default function TableCard(props) {
   const {el,openModal,setTrigger} = props;
   const [images, setImages] = useState([]);
-  const statusColor = el.status ==='โต๊ะว่าง' ? 'bg-blue-100' 
-  : el.status ==='จองแล้ว' ? 'bg-lime-500' : 'bg-blue-300'
+  const statusColor = el.status ==='FREE' ? 'bg-blue-100' 
+  : el.status ==='RESERVED' ? 'bg-lime-500' : 'bg-blue-300'
 
   const fetchImages = async () => {
     try {
@@ -15,13 +13,11 @@ export default function TableCard(props) {
       const response = await axios.get(`http://localhost:7000/admin/images/${el.table_id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      console.log(response.data)
       setImages(response.data);
     } catch (err) {
       console.log(err)
     }
   };
-
 
   const hdlDelete = async e =>{
     try {
@@ -38,36 +34,38 @@ export default function TableCard(props) {
   }
   }
 
-
   useEffect (()=>{ fetchImages();},[el])
 
   return (
-    <div className='mt-2 pr-4 mb-8 pl-2'>
-    <div className={`card card-side ${statusColor} bg-base-100 shadow-xl `}>
-      <div className='flex items-center justify-center w-80 h-26 rounded-full m-0'>
-    {images.length > 0 && (
-  <figure>
-    {images.map((image) => (
-      <img key={image.image_id || image.path} src={`http://localhost:7000/${image.path.replace(/\\/g, '/')}`} alt={`Table Number ${el.tableNumber} - Image`} />
-    ))}
-  </figure>
-)}
-</div>
-  <div className="card-body">
-    <div className="flex justify-between">
-    <h2 className="card-title text-xl font-bold text-blue-700 text-center">Table type = {el.type}</h2>
-    <div className="badge badge-error" onClick={hdlDelete}>dalete</div>
-    </div>
-    <div className='border-b-8 border-y-indigo-400 '>
-    <p className='text-xl text-rose-500 mb-4'> TableNumber  = {el.tableNumber}</p>
-    <p className='text-xl text-violet-700 mb-4'> Capacity   = {el.capacity}</p>
-    <p className='text-xl text-gray-600 font-bold text-center mb-8 animate-bounce'> Status   = {el.status}</p>
-    </div>
-    <div className="card-actions justify-end">
-      <button onClick={openModal} className="btn btn-warning">แก้ไข</button>
-    </div>
-  </div>
-</div>
+    <div className='flex flex-row m-4'>
+      <div className={`card card-side ${statusColor} bg-base-100 shadow-xl  flex-col  m-2 `}>  
+        <div className='flex justify-center w-80 h-auto m-auto'>
+          {images.length > 0 && (
+            <figure>
+              {images.map((image) => (
+                <img key={image.image_id || image.path} src={`http://localhost:7000/${image.path.replace(/\\/g, '/')}`} alt={`Table Number ${el.tableNumber} - Image`} />
+              ))}
+            </figure>
+          )}
+        </div>
+        <div className="card-body">
+          <div className="flex justify-end mb-5 ">
+            <div className="badge badge-error hover:bg-red-600 active:bg-red-800 cursor-pointer rounded-md shadow-md p-3 " onClick={hdlDelete}>Delete</div>
+          </div>
+          <div className='border-b-8 border-y-indigo-400 space-y-4'>
+          <h2 className=" text-center font-bold text-blue-700 ">Table type = {el.type}</h2>
+            <p className='text-center text-rose-500 whitespace-nowrap'>TableNumber  = {el.tableNumber}</p>
+            <p className='text-center text-violet-700'>Capacity   = {el.capacity}</p>
+            <p className='text-center text-violet-700'>Price    = {el.price} $</p>
+            <p className='text-center text-violet-700'>nots   : {el.nots} </p>
+            <p className='text-center text-gray-600 font-bold  mb-24 animate-bounce whitespace-nowrap'>Status   = {el.status}</p>
+
+          </div>
+          <div className="card-actions justify-end mt-2 mx-auto">
+            <button onClick={openModal} className="btn btn-warning px-8 py-3 xl:px-24 xl:py-4 hover:scale-105 border border-solid border-gray-500 transition-transform duration-300 rounded-md">แก้ไข</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
